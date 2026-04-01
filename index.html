@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Table for 6</title>
+        <link rel="stylesheet" href="src/css/main.css">
+        <script type="module" src="src/main.js" defer></script>
+    </head> 
+    <body>
+        <header>
+            <h1>Table for 6</h1>
+        </header>
+        <main>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search ingredients...">
+                <button id="search-btn">LETTUCE COOK</button>
+            </div>
+            <div id="recipe-grid"></div>
+            <button id="back-to-top" title="Go to top">↑</button>
+        </main>
+        <div id="macro-modal" class="modal" style="display: noen;">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="modal-title">Nutrition Facts</h2>
+                <div id="macro-data"></div>
+            </div>
+        </div>
+    </body>
+</html>
