@@ -1,11 +1,12 @@
-import { NUTRITION_APP_ID, NUTRITION_APP_KEY, RECIPE_APP_ID, RECIPE_APP_KEY } from "../../env.js";
+import { NUTRITION_APP_ID, NUTRITION_APP_KEY, RECIPE_APP_ID, RECIPE_APP_KEY } from "../../../env.js";
 
 export async function getNutritionDetails(recipeLabel, ingredientLines) {
     const url = `https://api.edamam.com/api/nutrition-details?app_id=${NUTRITION_APP_ID}&app_key=${NUTRITION_APP_KEY}`;
 
     const recipeData = {
         title: recipeLabel,
-        ingr: ingredientLines
+        ingr: ingredientLines, 
+        yield: 1
     };
 
     try {
