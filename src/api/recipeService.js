@@ -1,7 +1,8 @@
-import { RECIPE_APP_ID, RECIPE_APP_KEY } from "../../../env.js";
+const recipeId = import.meta.env.VITE_RECIPE_APP_ID;
+const recipeKey = import.meta.env.VITE_RECIPE_APP_KEY;
 
 export async function getRecipes(searchTerm) {
-    const url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchTerm}&app_id=${RECIPE_APP_ID}&app_key=${RECIPE_APP_KEY}`;
+    const url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchTerm}&app_id=${recipeId}&app_key=${recipeKey}`;
 
     try {
         console.log("Searching V2 URL:", url);

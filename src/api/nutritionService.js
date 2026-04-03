@@ -1,7 +1,9 @@
-import { NUTRITION_APP_ID, NUTRITION_APP_KEY, RECIPE_APP_ID, RECIPE_APP_KEY } from "../../../env.js";
+const nutritionId = import.meta.env.VITE_NUTRITION_APP_ID;
+const nutrtionKey = import.meta.env.VITE_NUTRITION_APP_KEY;
+
 
 export async function getNutritionDetails(recipeLabel, ingredientLines) {
-    const url = `https://api.edamam.com/api/nutrition-details?app_id=${NUTRITION_APP_ID}&app_key=${NUTRITION_APP_KEY}`;
+    const url = `https://api.edamam.com/api/nutrition-details?app_id=${nutritionId}&app_key=${nutrtionKey}`;
 
     const recipeData = {
         title: recipeLabel,
