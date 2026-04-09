@@ -1,9 +1,10 @@
 import { recipeTemplate } from './components/recipeCard.js';
+import { getFavorites } from './utils/storage.js';
 
-const favoritesGrid = document.querySelector("#favorites-grid");
+const favoritesGrid = document.querySelector("#recipe-grid");
 
 function loadFavorites() {
-    const savedRecipes = JSON.parse(localStorage.getItem('saved-recipes')) || [];
+    const savedRecipes = getFavorites();
 
     if (savedRecipes.length === 0) {
         favoritesGrid.innerHTML = "<p>No favorites saved yet. Go find some deliciousness!</p>";

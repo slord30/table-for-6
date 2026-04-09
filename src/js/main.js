@@ -4,134 +4,93 @@ import { saveRecipe } from '../js/utils/storage.js';
 import { getNutritionDetails } from '../js/api/nutritionService.js';
 import { nutritionTemplate } from '../js/components/nutritionModal.js';
 
-
+// Configuration & Cache
 const nutritionCache = {};
-
 const searchBtn = document.querySelector("#search-btn");
 const searchInput = document.querySelector("#search-input");
 const recipeGrid = document.querySelector("#recipe-grid");
 const backToTopBtn = document.querySelector("#back-to-top");
+const modal = document.querySelector("#macro-modal");
+const dataContainer = document.querySelector("#macro-data");
 
-// 1. Search Functionality
+// --- 1. SEARCH LOGIC ---
 searchBtn.addEventListener("click", async () => {
     const query = searchInput.value.trim();
     const checkFilters = Array.from(document.querySelectorAll(".recipe-filter:checked")).map(input => input.value);
 
+    // Gatekeeper: Must have text OR a filter
     if (query !== "" || checkFilters.length > 0) {
         recipeGrid.innerHTML = "<p>Searching for deliciousness...</p>";
-        const recipes = await getRecipes(query, checkFilters);
-       
-        // Clear old results
-        recipeGrid.innerHTML = "";
+        
+        try {
+            const recipes = await getRecipes(query, checkFilters);
+            recipeGrid.innerHTML = "";
 
-        if (!recipes || recipes.length === 0) {
-            recipeGrid.innerHTML = `<p>No recipes found for "${query}". Try something else!</p>`;
-        } else {
-            // Render new cards
-            const htmlString = recipes.map(hit => recipeTemplate(hit.recipe)).join('');
-            recipeGrid.innerHTML = htmlString;
+            if (!recipes || recipes.length === 0) {
+                recipeGrid.innerHTML = `<p>No recipes found. Try something else!</p>`;
+            } else {
+                // Map results and inject the FULL recipe data into the card HTML
+                recipeGrid.innerHTML = recipes.map(hit => {
+                    const fullData = encodeURIComponent(JSON.stringify(hit.recipe));
+                    const html = recipeTemplate(hit.recipe);
+                    // This line "sneaks" the full data into the card so we can save it later
+                    return html.replace('class="recipe-card', `data-full="${fullData}" class="recipe-card`);
+                }).join('');
+            }
+        } catch (err) {
+            recipeGrid.innerHTML = "<p>Something went wrong. Please try again.</p>";
         }
     } else {
-        alert("Please enter an ingredient or select a dietary filter.")
+        alert("Please enter an ingredient or select a dietary filter.");
     }
 });
 
-// scaling recipe
-recipeGrid.addEventListener("input", (e) => {
-    if (e.target.classList.contains("servings-input")) {
-        const card = e.target.closest(".recipe-card");
-        const targetServings = parseFloat(e.target.value) || 1; // Default to 1 if empty
-        const originalYield = parseFloat(card.querySelector(".orig-yield").innerText);
-
-        const amounts = card.querySelectorAll(".amt");
-
-        amounts.forEach(span => {
-            const originalAmount = parseFloat(span.dataset.orig);
-            if (!isNaN(originalAmount)) {
-                const multiplier = targetServings / originalYield;
-                const newAmount = Math.round((originalAmount * multiplier) * 100) / 100;
-                span.innerText = newAmount;
-            }
-        });
-    }
-});
-
+// --- 2. GRID EVENT DELEGATION (Clicks) ---
 recipeGrid.addEventListener("click", async (e) => {
-    //save recipe
+    const card = e.target.closest(".recipe-card");
+    if (!card) return;
+
+    // A. SAVE RECIPE LOGIC
     if (e.target.classList.contains("save-btn")) {
-        const card = e.target.closest(".recipe-card");
-
-        const recipeToSave = {
-            label: card.querySelector("h3").innerText,
-            image: card.querySelector("img").src,
-            uri: card.dataset.id
-        };
-
-        const success = saveRecipe(recipeToSave);
-        if (success) {
-            alert("Recipe saved to your favorites!");
-        } else {
-            alert("This recipe is already in your favorites.");
-        }
+        const recipeData = JSON.parse(decodeURIComponent(card.dataset.full));
+        const success = saveRecipe(recipeData);
+        alert(success ? "Recipe saved to favorites! ❤️" : "This recipe is already saved.");
     }
 
-    // nutrition modal
+    // B. NUTRITION MODAL LOGIC
     if (e.target.classList.contains("nutrition-btn")) {
-        const card = e.target.closest(".recipe-card");
         const title = card.querySelector("h3").innerText;
 
-        const modal = document.querySelector("#macro-modal");
-        const dataContainer = document.querySelector("#macro-data");
+        // Show Modal & Loading State
+        modal.style.display = "flex";
+        dataContainer.innerHTML = `<p>Analyzing macros...</p>`;
 
+        // Check Cache first
         if (nutritionCache[title]) {
-            console.log("Using cached data for:", title);
-            modal.style.display = "flex";
             dataContainer.innerHTML = nutritionTemplate(nutritionCache[title]);
             return;
         }
 
-        // Clean ingredients for better API mapping
+        // Get and clean ingredients for API
         const rawIngredients = JSON.parse(decodeURIComponent(card.dataset.ingredients || "[]"));
-        const ingredients = rawIngredients.map(ing => ing.replace(/\s*\(.*?\)\s*/g, ' ').trim());
+        const cleanIngredients = rawIngredients.map(ing => ing.replace(/\s*\(.*?\)\s*/g, ' ').trim());
 
-        // Show modal and loading state
-        modal.style.display = "flex";
-        dataContainer.innerHTML = `<p>Analyzing macros...</p>`;
-
-        // Fetch and Render via nutritionModal.js
-        const data = await getNutritionDetails(title, ingredients);
-
-        if (data) nutritionCache[title] = data;
-
-        dataContainer.innerHTML = nutritionTemplate(data);
+        const data = await getNutritionDetails(title, cleanIngredients);
+        if (data) {
+            nutritionCache[title] = data;
+            dataContainer.innerHTML = nutritionTemplate(data);
+        } else {
+            dataContainer.innerHTML = "<p>Nutrition data unavailable.</p>";
+        }
     }
 });
 
-
-// Modal and UI Helpers
-document.querySelector(".close-modal").addEventListener("click", () => {
-    document.querySelector("#macro-modal").style.display = "none";
-});
-
-const modal = document.querySelector("#macro-modal");
-
-modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-        modal.style.display = "none";
-    }
-})
+// --- 3. UI HELPERS (Modals & Scroll) ---
+document.querySelector(".close-modal").addEventListener("click", () => modal.style.display = "none");
+modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
 window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) {
-        backToTopBtn.style.display = "block";
-    } else {
-        backToTopBtn.style.display = "none";
-    }
+    backToTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
 });
 
-backToTopBtn.addEventListener("click", () => {
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-});
+backToTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
