@@ -1,8 +1,8 @@
-import { getRecipes } from './api/recipeService.js';
-import { recipeTemplate } from './components/recipeCard.js';
-import { saveRecipe } from './utils/storage.js';
-import { getNutritionDetails } from './api/nutritionService.js';
-import { nutritionTemplate } from './components/nutritionModal.js';
+import { getRecipes } from '../js/api/recipeService.js';
+import { recipeTemplate } from '../js/components/recipeCard.js';
+import { saveRecipe } from '../js/utils/storage.js';
+import { getNutritionDetails } from '../js/api/nutritionService.js';
+import { nutritionTemplate } from '../js/components/nutritionModal.js';
 
 
 const nutritionCache = {};
@@ -14,21 +14,25 @@ const backToTopBtn = document.querySelector("#back-to-top");
 
 // 1. Search Functionality
 searchBtn.addEventListener("click", async () => {
-    const query = searchInput.value;
-    if (query) {
-        recipeGrid.innerHTML = "<p>Searching for deliciousness...</p>";
-        const recipes = await getRecipes(query);
+    const query = searchInput.value.trim();
+    const checkFilters = Array.from(document.querySelectorAll(".recipe-filter:checked")).map(input => input.value);
 
+    if (query !== "" || checkFilters.length > 0) {
+        recipeGrid.innerHTML = "<p>Searching for deliciousness...</p>";
+        const recipes = await getRecipes(query, checkFilters);
+       
         // Clear old results
         recipeGrid.innerHTML = "";
 
-        if (recipes.length === 0) {
+        if (!recipes || recipes.length === 0) {
             recipeGrid.innerHTML = `<p>No recipes found for "${query}". Try something else!</p>`;
         } else {
             // Render new cards
             const htmlString = recipes.map(hit => recipeTemplate(hit.recipe)).join('');
             recipeGrid.innerHTML = htmlString;
         }
+    } else {
+        alert("Please enter an ingredient or select a dietary filter.")
     }
 });
 
@@ -72,7 +76,7 @@ recipeGrid.addEventListener("click", async (e) => {
     }
 
     // nutrition modal
-     if (e.target.classList.contains("nutrition-btn")) {
+    if (e.target.classList.contains("nutrition-btn")) {
         const card = e.target.closest(".recipe-card");
         const title = card.querySelector("h3").innerText;
 
@@ -85,7 +89,7 @@ recipeGrid.addEventListener("click", async (e) => {
             dataContainer.innerHTML = nutritionTemplate(nutritionCache[title]);
             return;
         }
-        
+
         // Clean ingredients for better API mapping
         const rawIngredients = JSON.parse(decodeURIComponent(card.dataset.ingredients || "[]"));
         const ingredients = rawIngredients.map(ing => ing.replace(/\s*\(.*?\)\s*/g, ' ').trim());

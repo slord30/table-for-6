@@ -1,29 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Table for 6</title>
-        <link rel="stylesheet" href="src/css/main.css">
-        <script type="module" src="src/main.js" defer></script>
-    </head> 
-    <body>
-        <header>
-            <h1>Table for 6</h1>
-        </header>
-        <main>
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search ingredients...">
-                <button id="search-btn">LETTUCE COOK</button>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table for 6</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Delius+Unicase:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="src/css/main.css">
+    <script type="module" src="src/js/main.js" defer></script>
+</head>
+
+<body>
+    <header>
+    <header class="header-container">
+    <div class="brand">
+        <a href="index.html">
+            <img src="src/images/logo-04.png" alt="Logo" class="logo">
+        </a>
+        <h1>TABLE FOR 6</h1>
+    </div>
+    
+    <nav>
+        <a href="favorites.html" class="view-favorites">View Favorites</a>
+    </nav>
+</header>
+
+    <main>
+        <div class="search-container">
+            <h3>Thyme to cook!</h3>
+            <input type="text" id="search-input" placeholder="Search ingredients...">
+            <div class="filter-section">
+                <h3>Dietary Preferences</h3>
+                <div class="filter-grid">
+                    <label><input type="checkbox" class="recipe-filter" value="vegan"> Vegan</label>
+                    <label><input type="checkbox" class="recipe-filter" value="vegetarian"> Vegetarian</label>
+                    <label><input type="checkbox" class="recipe-filter" value="paleo"> Paleo</label>
+                    <label><input type="checkbox" class="recipe-filter" value="keto-friendly"> Keto</label>
+                    <label><input type="checkbox" class="recipe-filter" value="gluten-free"> Gluten-Free</label>
+                    <label><input type="checkbox" class="recipe-filter" value="dairy-free"> Dairy-Free</label>
+
+                </div>
             </div>
-            <div id="recipe-grid"></div>
-            <button id="back-to-top" title="Go to top">↑</button>
-        </main>
-        <div id="macro-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2 id="modal-title">Nutrition Facts</h2>
-                <div id="macro-data"></div>
+            <div class="filter-section">
+                <h3>Nutrional Goals</h3>
+                <div class="filter-grid">
+                    <label><input type="checkbox" class="recipe-filter" value="high-protein"> High-Protein</label>
+                    <label><input type="checkbox" class="recipe-filter" value="low-carb"> Low-Carb</label>
+                    <label><input type="checkbox" class="recipe-filter" value="low-fat"> Low-Fat</label>
+                    <label><input type="checkbox" class="recipe-filter" value="balanced"> Balanced</label>
+                </div>
             </div>
+            <button id="search-btn">LETTUCE COOK</button>
         </div>
-    </body>
+        <div id="recipe-grid"></div>
+        <button id="back-to-top" title="Go to top">↑</button>
+    </main>
+    <div id="macro-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title">Nutrition Facts</h2>
+            <div id="macro-data"></div>
+        </div>
+    </div>
+</body>
+
 </html>

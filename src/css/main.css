@@ -3,6 +3,151 @@
     --white-smoke: #F7F5F3;
     --sandy-clay: #E1B77D;
     --olive-wood: #756045;
+
+    --main-font: "Delius", cursive;
+    --heading-font: "Delius Unicase", cursive;
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 3rem;
+    font-family: var(--main-font);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    font-family: var(--heading-font);
+    color: var(--palm-leaf);
+}
+
+
+button {
+    font: var(--heading-font);
+}
+
+.header-container {
+    display: flex;
+    align-items: center; /* Centers logo and text vertically */
+    justify-content: space-between;
+    gap: 15px;           /* Space between logo and "Table for 6" title */
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--olive-wood);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand h1 {
+    margin: 0;
+}
+
+.view-favorites {
+    text-decoration: none;
+    color: var(--palm-leaf);
+    transition: color 0.3s;
+    font-weight: 700;
+}
+
+.view-favorites:hover {
+    color: var(--olive-wood);
+}
+
+.logo {
+    max-width: 100px;     /* Adjust size as needed */
+    height: auto;        /* Keeps proportions correct */
+    margin-left: auto;
+}
+
+
+/* Ensure header doesn't shrink too much on mobile */
+@media screen and (max-width: 600px) {
+    .header-container {
+        justify-content: center; /* Center everything on small screens */
+        flex-direction: column;  /* Stack logo and title if needed */
+        text-align: center;
+    }
+
+    .header-container h1 {
+        font-size: 1.6rem;
+    }
+}
+
+.search-container {
+    margin-top: 3rem;
+}
+
+#search-input {
+    margin-bottom: 25px;
+    padding: 10px;
+}
+
+.filter-section h3 {
+    margin: 10px 0 5px 0;
+}
+
+.filter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: var(--sandy-clay);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.filter-grid label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* Make labels easier to tap on mobile */
+.filter-grid label {
+    padding: 10px; /* Bigger touch area */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#search-btn {
+    padding: 10px;
+    background-color: var(--olive-wood);
+    border: none;
+    border-radius: 5px;
+    color: var(--white-smoke);
+    transition: color 0.3s;
+}
+
+#search-btn:hover {
+    background-color: var(--palm-leaf);
+}
+
+/* Make the search input and button full-width on small screens */
+@media screen and (max-width: 600px) {
+    #search-input, #search-btn {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 12px;
+        font-size: 1.1rem; /* Easier to read */
+   }
 }
 
 #recipe-grid {
