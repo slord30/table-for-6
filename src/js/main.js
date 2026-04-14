@@ -61,11 +61,17 @@ recipeGrid.addEventListener("click", async (e) => {
     if (e.target.classList.contains("nutrition-btn")) {
         const title = card.querySelector("h3").innerText;
 
+        const currentServings = parseInt(card.querySelector(".servings-input").value || 1);
+        const originalYield = parseInt(card.querySelector(".orig-yield").textContent || 1);
+
+        // calculate ratio
+        const ratio = currentServings / originalYield;
+
         modal.style.display = "flex";
         dataContainer.innerHTML = `<p>Analyzing macros...</p>`;
 
         if (nutritionCache[title]) {
-            dataContainer.innerHTML = nutritionTemplate(nutritionCache[title]);
+            dataContainer.innerHTML = nutritionTemplate(nutritionCache[title], ratio);
             return;
         }
 
@@ -76,7 +82,7 @@ recipeGrid.addEventListener("click", async (e) => {
         const data = await getNutritionDetails(title, cleanIngredients);
         if (data) {
             nutritionCache[title] = data;
-            dataContainer.innerHTML = nutritionTemplate(data);
+            dataContainer.innerHTML = nutritionTemplate(data, ratio);
         } else {
             dataContainer.innerHTML = "<p>Nutrition data unavailable.</p>";
         }

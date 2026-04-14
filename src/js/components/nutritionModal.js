@@ -1,13 +1,11 @@
-export const nutritionTemplate = (data) => {
+export const nutritionTemplate = (data, ratio = 1) => {
     if (!data) return `<p class="error-msg">Sorry, detailed nutrition data is unavailable for this recipe.</p>`;
 
-    // 1. Try to use totalNutrients if it exists
     let nutrients = data.totalNutrients;
 
-    // 2. If it's missing (like in your console screenshot), sum up the parsed ingredients
     if (!nutrients && data.ingredients) {
         nutrients = data.ingredients.reduce((acc, ing) => {
-            // Drill down into the parsed data shown in your screenshot
+
             const ingNutrients = ing.parsed?.[0]?.nutrients;
             if (ingNutrients) {
                 Object.keys(ingNutrients).forEach(key => {
@@ -19,15 +17,14 @@ export const nutritionTemplate = (data) => {
         }, {});
     }
 
-    // 3. Fallback if no nutrients were found at all
     if (!nutrients || Object.keys(nutrients).length === 0) {
         return `<p>Sorry, nutrition data is unavailable for this recipe.</p>`;
     }
 
-    const calories = Math.round(data.calories || nutrients.ENERC_KCAL?.quantity || 0);
-    const protein = Math.round(nutrients.PROCNT?.quantity || 0);
-    const fat = Math.round(nutrients.FAT?.quantity || 0);
-    const carbs = Math.round(nutrients.CHOCDF?.quantity || 0);
+    const calories = Math.round((data.calories || nutrients.ENERC_KCAL?.quantity || 0) * ratio);
+    const protein = Math.round((nutrients.PROCNT?.quantity || 0) * ratio);
+    const fat = Math.round((nutrients.FAT?.quantity || 0) * ratio);
+    const carbs = Math.round((nutrients.CHOCDF?.quantity || 0) * ratio);
 
     return `
         <div class="macro-grid">
