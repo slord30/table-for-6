@@ -1,8 +1,9 @@
 export function recipeTemplate(recipe) {
+  const ingredientsData = encodeURIComponent(
+    JSON.stringify(recipe.ingredientLines),
+  );
 
-    const ingredientsData = encodeURIComponent(JSON.stringify(recipe.ingredientLines));
-    
-    return `
+  return `
         <div class="recipe-card fade-in" data-id="${recipe.uri}" data-ingredients="${ingredientsData}">
             <img src="${recipe.image}" alt="${recipe.label}" loading="lazy">
             <div class="recipe-content">
@@ -23,12 +24,16 @@ export function recipeTemplate(recipe) {
                 <div class="ingredient-list">
                     <h4>Ingredients (Scaled):</h4>
                     <ul>
-                        ${recipe.ingredients.map(ing => `
+                        ${recipe.ingredients
+                          .map(
+                            (ing) => `
                             <li>
-                                <span class="amt" data-orig="${ing.quantity || 0}">${ing.quantity ? Math.round(ing.quantity * 100) / 100 : ''}</span> 
-                                ${ing.measure || ''} ${ing.food}
+                                <span class="amt" data-orig="${ing.quantity || 0}">${ing.quantity ? Math.round(ing.quantity * 100) / 100 : ""}</span> 
+                                ${ing.measure || ""} ${ing.food}
                             </li>
-                        `).join('')}
+                        `,
+                          )
+                          .join("")}
                     </ul>
                 </div>
 

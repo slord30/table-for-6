@@ -1,32 +1,34 @@
 export const nutritionTemplate = (data, ratio = 1) => {
-    if (!data) return `<p class="error-msg">Sorry, detailed nutrition data is unavailable for this recipe.</p>`;
+  if (!data)
+    return `<p class="error-msg">Sorry, detailed nutrition data is unavailable for this recipe.</p>`;
 
-    let nutrients = data.totalNutrients;
+  let nutrients = data.totalNutrients;
 
-    if (!nutrients && data.ingredients) {
-        nutrients = data.ingredients.reduce((acc, ing) => {
+  if (!nutrients && data.ingredients) {
+    nutrients = data.ingredients.reduce((acc, ing) => {
+      const ingNutrients = ing.parsed?.[0]?.nutrients;
+      if (ingNutrients) {
+        Object.keys(ingNutrients).forEach((key) => {
+          if (!acc[key]) acc[key] = { quantity: 0 };
+          acc[key].quantity += ingNutrients[key].quantity;
+        });
+      }
+      return acc;
+    }, {});
+  }
 
-            const ingNutrients = ing.parsed?.[0]?.nutrients;
-            if (ingNutrients) {
-                Object.keys(ingNutrients).forEach(key => {
-                    if (!acc[key]) acc[key] = { quantity: 0 };
-                    acc[key].quantity += ingNutrients[key].quantity;
-                });
-            }
-            return acc;
-        }, {});
-    }
+  if (!nutrients || Object.keys(nutrients).length === 0) {
+    return `<p>Sorry, nutrition data is unavailable for this recipe.</p>`;
+  }
 
-    if (!nutrients || Object.keys(nutrients).length === 0) {
-        return `<p>Sorry, nutrition data is unavailable for this recipe.</p>`;
-    }
+  const calories = Math.round(
+    (data.calories || nutrients.ENERC_KCAL?.quantity || 0) * ratio,
+  );
+  const protein = Math.round((nutrients.PROCNT?.quantity || 0) * ratio);
+  const fat = Math.round((nutrients.FAT?.quantity || 0) * ratio);
+  const carbs = Math.round((nutrients.CHOCDF?.quantity || 0) * ratio);
 
-    const calories = Math.round((data.calories || nutrients.ENERC_KCAL?.quantity || 0) * ratio);
-    const protein = Math.round((nutrients.PROCNT?.quantity || 0) * ratio);
-    const fat = Math.round((nutrients.FAT?.quantity || 0) * ratio);
-    const carbs = Math.round((nutrients.CHOCDF?.quantity || 0) * ratio);
-
-    return `
+  return `
         <div class="macro-grid">
             <div class="macro-item">
                 <span class="macro-label">Calories</span>
